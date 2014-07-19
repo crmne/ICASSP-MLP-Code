@@ -12,10 +12,12 @@ The code assumes a directory structure as follows:
 ```
 	dataset_dir
     	|
-	   audio 
+	   audio
+      |
+genre1 genre2 genre3 …
 ```
 
-The dataset_dir initially containts only the audio. The first step in setting up the code is to create lists for training/validation/test data. This is done by running:
+The dataset_dir initially containts only the audio folder. The first step in setting up the code is to create lists for training/validation/test data. This is done by running:
 ```
 python make_lists.py /path/to/dataset_dir
 ```
