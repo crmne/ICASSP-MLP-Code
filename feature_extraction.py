@@ -14,6 +14,7 @@ import pdb
 
 def read_wav(filename):
     bits_per_sample = '16'
+    filename = "\"" + filename + "\""
     cmd = ['sox',filename,'-t','raw','-e','unsigned-integer','-L','-c','1','-b',bits_per_sample,'-','pad','0','30.0','rate','22050.0','trim','0','30.0']
     cmd = ' '.join(cmd)
     print cmd
