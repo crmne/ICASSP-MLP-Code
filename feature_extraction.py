@@ -96,5 +96,11 @@ class FeatExtraction():
         self.h5.close()
         
 if __name__ == '__main__':
-	test = FeatExtraction('/homes/sss31/datasets/gtzan/')
+    if len(sys.argv) < 2:
+        print 'Usage: python %s gtzan_path' % sys.argv[0]
+        sys.exit()
+
+    gtzan_path = os.path.abspath(sys.argv[1])
+
+	test = FeatExtraction(gtzan_path)
   

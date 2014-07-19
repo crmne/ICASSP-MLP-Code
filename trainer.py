@@ -50,6 +50,13 @@ class trainer():
 		self.optimizer.train(train_set,valid_set,learning_rate=lr,num_epochs=num_epochs,save=save,mom_rate=mom_rate)
 
 if __name__=='__main__':
+	if len(sys.argv) < 2:
+		print 'Usage: python %s gtzan_path' % sys.argv[0]
+		sys.exit()
+
+	gtzan_path = os.path.abspath(sys.argv[1])
+
 	state = state.get_state()
+	state['dataset_dir'] = gtzan_path
 	test = trainer(state)
 	test.train()

@@ -45,7 +45,7 @@ def get_state():
 	state['save'] = True
 	state['output_folder'] = None
 	state['lr_update'] = False
-	state['dataset_dir'] = '/homes/sss31/datasets/gtzan' #/path/to/dataset/dir
+	#state['dataset_dir'] = '/homes/sss31/datasets/gtzan' #/path/to/dataset/dir
 	state['batch_size'] = 20
 	state['mom_rate'] = 0.9
 	return state
