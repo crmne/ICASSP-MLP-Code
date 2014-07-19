@@ -41,5 +41,5 @@ The above command extracts features and stores them in an HDF5 file called feats
 
 Most of the things are not set up to perform training. All the parameters required for training can be set in the states.py file. Training can then be initiated by calling:
 ```
-python trainer.py
+python trainer.py /path/to/dataset_dir
 ```
