@@ -37,7 +37,7 @@ def generate_mirex_list(train_list, annotations):
     return out_list
             
 
-def make_file_list(gtzan_path, n_folds=5,):
+def make_file_list(gtzan_path, n_folds=5):
     """
     Generates lists
     """
@@ -73,7 +73,7 @@ def make_file_list(gtzan_path, n_folds=5,):
 def create_fold(n, n_folds, folds, annotations, out_path):
     train_path = os.path.join(out_path, 'train_%i_of_%i.txt' % (n+1, n_folds))
     valid_path = os.path.join(out_path, 'valid_%i_of_%i.txt' % (n+1, n_folds))
-    test_path = os.path.join(out_path, 'test_%i_of_%i.txt' % (n+1, n_folds))1
+    test_path = os.path.join(out_path, 'test_%i_of_%i.txt' % (n+1, n_folds))
     
     test_list = folds[n]
     train_list = []
