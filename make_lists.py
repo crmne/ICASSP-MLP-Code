@@ -6,6 +6,7 @@ import pickle
 import sys
 import utils as U
 import pdb
+import argparse
 
 
 def read_file(filename):
@@ -136,14 +137,10 @@ def generate_ground_truth_pickle(gt_file):
     pickle.dump(mp3_dict,open(gt_pickle,'w'))
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print 'Usage: python %s gtzan_path [n_folds=10]' % sys.argv[0]
-        sys.exit()
-    
-    gtzan_path = os.path.abspath(sys.argv[1])
-    if len(sys.argv) > 2:
-        n_folds = int(sys.argv[2])
-    else:
-        n_folds = 10
-        
-    make_file_list(gtzan_path, n_folds)
+    parser = argparse.ArgumentParser(description="Creates the lists for training/validation/test data.")
+    parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
+    parser.add_argument("-f", "--folds", type=int, default=10, help="number of folds")
+    parser.add_argument("-s", "--songs_per_genre", type=int, default=None, help="number of songs per genre to use")
+    args = parser.parse_args()
+
+    make_file_list(os.path.abspath(args.dataset_dir), args.folds, args.songs_per_genre)

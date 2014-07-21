@@ -11,6 +11,7 @@ import os
 from spectrogram import SpecGram
 import tables
 import pdb
+import argparse
 
 def read_wav(filename):
     bits_per_sample = '16'
@@ -26,7 +27,6 @@ def read_wav(filename):
 def calc_specgram(x,fs,winSize,):
     spec = SpecGram(x,fs,winSize)
     return spec.specMat
-
 
 def make_4tensor(x):
     assert x.ndim <= 4
@@ -96,11 +96,9 @@ class FeatExtraction():
         self.h5.close()
         
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print 'Usage: python %s gtzan_path' % sys.argv[0]
-        sys.exit()
+    parser = argparse.ArgumentParser(description="Extracts the features.")
+    parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
+    args = parser.parse_args()
 
-    gtzan_path = os.path.abspath(sys.argv[1])
-
-	test = FeatExtraction(gtzan_path)
+    test = FeatExtraction(os.path.abspath(args.dataset_dir))
   
