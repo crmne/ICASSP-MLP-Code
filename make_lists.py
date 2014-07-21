@@ -38,7 +38,7 @@ def generate_mirex_list(train_list, annotations):
     return out_list
             
 
-def make_file_list(gtzan_path, n_folds=5):
+def make_file_list(gtzan_path, n_folds=5, songs_per_genre=None):
     """
     Generates lists
     """
@@ -48,15 +48,30 @@ def make_file_list(gtzan_path, n_folds=5):
     for ext in ['.au', '.mp3', '.wav']:
         files = U.getFiles(audio_path, ext)
         files_list.extend(files)
-    random.shuffle(files_list)
-    
+
+    annotations = get_annotations(files_list)
+
+    if songs_per_genre is not None:
+        # select only x songs per genre
+        # create a dictionary {genre1: [song1, song2], genre2: [song3, song4]}
+        genres_dic = {}
+        for k, v in annotations.iteritems():
+            genres_dic[v] = genres_dic.get(v, [])
+            genres_dic[v].append(k)
+        files_list = []
+        for k in genres_dic.iterkeys():
+            sample = random.choice(genres_dic[k], size=songs_per_genre, replace=False)
+            print "Selected %i songs for %s" % (len(sample), k)
+            files_list.extend(sample)
+
+    random.shuffle(files_list) # shuffle at the end of the selection
+    annotations = get_annotations(files_list) # update annotations
+
     if not os.path.exists(out_path):
         os.makedirs(out_path)
     
     audio_list_path = os.path.join(out_path, 'audio_files.txt')
     open(audio_list_path,'w').writelines(['%s\n' % f for f in files_list])
-    
-    annotations = get_annotations(files_list)
 
     ground_truth_path = os.path.join(out_path, 'ground_truth.txt')
     open(ground_truth_path,'w').writelines(generate_mirex_list(files_list, annotations))
