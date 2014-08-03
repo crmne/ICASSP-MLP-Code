@@ -1,6 +1,5 @@
-
 import numpy
-import numpy.random as random
+from numpy.random import RandomState
 import os
 import pickle
 import utils as U
@@ -38,7 +37,7 @@ def generate_mirex_list(train_list, annotations):
     return out_list
 
 
-def make_file_list(gtzan_path, n_folds=5, songs_per_genre=None):
+def make_file_list(gtzan_path, prng, n_folds=5, songs_per_genre=None):
     """
     Generates lists
     """
@@ -60,12 +59,11 @@ def make_file_list(gtzan_path, n_folds=5, songs_per_genre=None):
             genres_dic[v].append(k)
         files_list = []
         for k in genres_dic.iterkeys():
-            sample = random.choice(
-                genres_dic[k], size=songs_per_genre, replace=False)
+            sample = prng.choice(genres_dic[k], size=songs_per_genre, replace=False)
             print "Selected %i songs for %s" % (len(sample), k)
             files_list.extend(sample)
 
-    random.shuffle(files_list)  # shuffle at the end of the selection
+    prng.shuffle(files_list)  # shuffle at the end of the selection
     annotations = get_annotations(files_list)  # update annotations
 
     if not os.path.exists(out_path):
@@ -161,14 +159,19 @@ def generate_ground_truth_pickle(gt_file):
     pickle.dump(mp3_dict, open(gt_pickle, 'w'))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="Creates the lists for training/validation/test data.")
+    parser = argparse.ArgumentParser(description="Creates the lists for training/validation/test data.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
-    parser.add_argument(
-        "-f", "--folds", type=int, default=10, help="number of folds")
-    parser.add_argument("-s", "--songs_per_genre", type=int,
-                        default=None, help="number of songs per genre to use")
+    parser.add_argument("-f", "--folds", type=int, default=10, help="number of folds")
+    parser.add_argument("-s", "--songs_per_genre", type=int, default=None, help="number of songs per genre to use")
+    parser.add_argument("-r", "--seed", type=int, default=None, help="set a specific seed")
     args = parser.parse_args()
 
+    prng = RandomState(args.seed)
+
+    print "Seed: %i" % prng.get_state()[1][0]  # ugly but works in numpy 1.8.1
+
     make_file_list(
-        os.path.abspath(args.dataset_dir), args.folds, args.songs_per_genre)
+        os.path.abspath(args.dataset_dir),
+        prng,
+        args.folds,
+        args.songs_per_genre)
