@@ -30,9 +30,9 @@ def generate_mirex_list(train_list, annotations):
         annot = annotations.get(song, None)
         if annot is None:
             print 'No annotations for song %s' % song
-            continue
-        assert(type('') == type(annot))
-        out_list.append('%s\t%s\n' % (song, annot))
+        else:
+            assert(isinstance(annot, str))
+            out_list.append('%s\t%s\n' % (song, annot))
 
     return out_list
 
@@ -87,10 +87,8 @@ def make_file_list(gtzan_path, prng, n_folds=5, songs_per_genre=None):
 
 
 def create_fold(n, n_folds, folds, annotations, out_path):
-    train_path = os.path.join(
-        out_path, 'train_%i_of_%i.txt' % (n + 1, n_folds))
-    valid_path = os.path.join(
-        out_path, 'valid_%i_of_%i.txt' % (n + 1, n_folds))
+    train_path = os.path.join(out_path, 'train_%i_of_%i.txt' % (n + 1, n_folds))
+    valid_path = os.path.join(out_path, 'valid_%i_of_%i.txt' % (n + 1, n_folds))
     test_path = os.path.join(out_path, 'test_%i_of_%i.txt' % (n + 1, n_folds))
 
     test_list = folds[n]

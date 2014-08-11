@@ -33,6 +33,7 @@ batch_size: Minibatch size used for SGD.
 
 def get_state():
     state = {}
+    state['model'] = 'MLP'  # 'MLP' or 'LR'
     state['n_inputs'] = 513
     state['n_outputs'] = 10
     state['n_hidden'] = [1]

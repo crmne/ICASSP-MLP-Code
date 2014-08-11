@@ -7,6 +7,7 @@ C4DM
 import os
 from preprocessing import PreProcessor
 from mlp import MLP
+from lr import LR
 from sgd import SGD_Optimizer
 from dataset import Dataset
 import state
@@ -30,12 +31,18 @@ class trainer():
         self.data = self.preprocessor.data
         self.targets = self.preprocessor.targets
         print 'Building model.'
-        self.model = MLP(n_inputs=self.state.get('n_inputs', 513),
-                         n_outputs=self.state.get('n_ouputs', 10),
-                         n_hidden=self.state.get('n_hidden', [50]),
-                         activation=self.state.get('activation', 'sigmoid'),
-                         output_layer=self.state.get('sigmoid', 'sigmoid'),
-                         dropout_rates=self.state.get('dropout_rates', None))
+        if self.state.get('model', 'MLP') == 'MLP':
+            self.model = MLP(n_inputs=self.state.get('n_inputs', 513),
+                             n_outputs=self.state.get('n_ouputs', 10),
+                             n_hidden=self.state.get('n_hidden', [50]),
+                             activation=self.state.get('activation', 'sigmoid'),
+                             output_layer=self.state.get('sigmoid', 'sigmoid'),
+                             dropout_rates=self.state.get('dropout_rates', None))
+        elif self.state.get('model') == 'LR':
+            self.model = LR(n_inputs=self.state.get('n_inputs', 513),
+                            n_outputs=self.state.get('n_ouputs', 10),
+                            activation=self.state.get('activation', 'sigmoid'),
+                            output_layer=self.state.get('sigmoid', 'sigmoid'))
 
     def train(self,):
         print 'Starting training.'
