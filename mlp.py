@@ -13,7 +13,7 @@ from theano.tensor.shared_randomstreams import RandomStreams
 
 class MLP():
 
-    def __init__(self, n_inputs=513, n_outputs=10, n_hidden=[50, 50, 50], activation='sigmoid', output_layer='sigmoid', dropout_rates=None):
+    def __init__(self, rand, n_inputs=513, n_outputs=10, n_hidden=[50, 50, 50], activation='sigmoid', output_layer='sigmoid', dropout_rates=None):
         self.x = T.matrix('x')
         self.y = T.matrix('y')
         self.n_layers = len(n_hidden)
@@ -21,7 +21,7 @@ class MLP():
         self.n_hidden = n_hidden
         self.n_outputs = n_outputs
         self.sizes = [self.n_inputs] + self.n_hidden + [self.n_outputs]
-        self.numpy_rng = numpy.random.RandomState(123)
+        self.numpy_rng = rand
         self.theano_rng = RandomStreams(self.numpy_rng.randint(2 ** 10))
         self.output_layer = output_layer
         if dropout_rates is not None:

@@ -10,13 +10,14 @@ from mlp import MLP
 from lr import LR
 from sgd import SGD_Optimizer
 from dataset import Dataset
+from numpy.random import RandomState
 import state
 import argparse
 
 
 class trainer():
 
-    def __init__(self, state):
+    def __init__(self, state, rand):
         self.state = state
         self.dataset_dir = self.state.get('dataset_dir', '')
         self.list_dir = os.path.join(self.dataset_dir, 'lists')
@@ -32,14 +33,14 @@ class trainer():
         self.targets = self.preprocessor.targets
         print 'Building model.'
         if self.state.get('model', 'MLP') == 'MLP':
-            self.model = MLP(n_inputs=self.state.get('n_inputs', 513),
+            self.model = MLP(rand, n_inputs=self.state.get('n_inputs', 513),
                              n_outputs=self.state.get('n_ouputs', 10),
                              n_hidden=self.state.get('n_hidden', [50]),
                              activation=self.state.get('activation', 'sigmoid'),
                              output_layer=self.state.get('sigmoid', 'sigmoid'),
                              dropout_rates=self.state.get('dropout_rates', None))
         elif self.state.get('model') == 'LR':
-            self.model = LR(n_inputs=self.state.get('n_inputs', 513),
+            self.model = LR(rand, n_inputs=self.state.get('n_inputs', 513),
                             n_outputs=self.state.get('n_ouputs', 10),
                             activation=self.state.get('activation', 'sigmoid'),
                             output_layer=self.state.get('sigmoid', 'sigmoid'))
@@ -76,9 +77,14 @@ class trainer():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trains the neural network.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
+    parser.add_argument("-s", "--seed", type=int, default=None, help="set a specific seed")
     args = parser.parse_args()
+
+    rand = RandomState(args.seed)
+
+    print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1
 
     state = state.get_state()
     state['dataset_dir'] = os.path.abspath(args.dataset_dir)
-    test = trainer(state)
+    test = trainer(state, rand)
     test.train()

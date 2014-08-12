@@ -12,13 +12,13 @@ from theano.tensor.shared_randomstreams import RandomStreams
 
 class LR():
 
-    def __init__(self, n_inputs=513, n_outputs=10, activation='sigmoid', output_layer='sigmoid'):
+    def __init__(self, rand, n_inputs=513, n_outputs=10, activation='sigmoid', output_layer='sigmoid'):
         self.x = T.matrix('x')
         self.y = T.matrix('y')
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
         self.sizes = [self.n_inputs] + [self.n_outputs]
-        self.numpy_rng = numpy.random.RandomState(123)
+        self.numpy_rng = rand
         self.theano_rng = RandomStreams(self.numpy_rng.randint(2 ** 10))
         self.output_layer = output_layer
         self.initialize_params()

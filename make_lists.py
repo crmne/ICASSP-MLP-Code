@@ -37,7 +37,7 @@ def generate_mirex_list(train_list, annotations):
     return out_list
 
 
-def make_file_list(gtzan_path, prng, n_folds=5, songs_per_genre=None):
+def make_file_list(gtzan_path, rand, n_folds=5, songs_per_genre=None):
     """
     Generates lists
     """
@@ -59,11 +59,11 @@ def make_file_list(gtzan_path, prng, n_folds=5, songs_per_genre=None):
             genres_dic[v].append(k)
         files_list = []
         for k in genres_dic.iterkeys():
-            sample = prng.choice(genres_dic[k], size=songs_per_genre, replace=False)
+            sample = rand.choice(genres_dic[k], size=songs_per_genre, replace=False)
             print "Selected %i songs for %s" % (len(sample), k)
             files_list.extend(sample)
 
-    prng.shuffle(files_list)  # shuffle at the end of the selection
+    rand.shuffle(files_list)  # shuffle at the end of the selection
     annotations = get_annotations(files_list)  # update annotations
 
     if not os.path.exists(out_path):
@@ -160,16 +160,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Creates the lists for training/validation/test data.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
     parser.add_argument("-f", "--folds", type=int, default=10, help="number of folds")
-    parser.add_argument("-s", "--songs_per_genre", type=int, default=None, help="number of songs per genre to use")
-    parser.add_argument("-r", "--seed", type=int, default=None, help="set a specific seed")
+    parser.add_argument("-g", "--songs_per_genre", type=int, default=None, help="number of songs per genre to use")
+    parser.add_argument("-s", "--seed", type=int, default=None, help="set a specific seed")
     args = parser.parse_args()
 
-    prng = RandomState(args.seed)
+    rand = RandomState(args.seed)
 
-    print "Seed: %i" % prng.get_state()[1][0]  # ugly but works in numpy 1.8.1
+    print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1
 
     make_file_list(
         os.path.abspath(args.dataset_dir),
-        prng,
+        rand,
         args.folds,
         args.songs_per_genre)
