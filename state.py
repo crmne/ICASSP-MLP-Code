@@ -39,10 +39,10 @@ def get_state():
     state['n_hidden'] = [1]
     state['activation'] = 'sigmoid'  # 'sigmoid' or 'ReLU'
     state['output_layer'] = 'sigmoid'  # 'sigmoid' or 'softmax'
-    state['dropout_rates'] = [0]
+    state['dropout_rates'] = None
     state['momentum'] = False
     state['learning_rate'] = 0.01
-    state['num_epochs'] = 200
+    state['num_epochs'] = 5
     state['save'] = True
     state['output_folder'] = None
     state['lr_update'] = False

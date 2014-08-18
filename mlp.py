@@ -24,15 +24,14 @@ class MLP():
         self.numpy_rng = rand
         self.theano_rng = RandomStreams(self.numpy_rng.randint(2 ** 10))
         self.output_layer = output_layer
-        if dropout_rates is not None:
-            assert len(dropout_rates) == len(
-                n_hidden), "dropout_rates masks must be specified for each of the layers."
-            self.dropout_rates = dropout_rates
+        self.dropout_rates = dropout_rates
         self.initialize_params()
         self.set_activation(activation)
-        if not self.dropout_rates:
+        if self.dropout_rates is None:
             self.build_graph()
         else:
+            assert len(dropout_rates) == len(
+                n_hidden), "dropout_rates masks must be specified for each of the layers."
             self.build_graph_dropout()
 
     def initialize_params(self,):
@@ -118,6 +117,7 @@ class MLP():
         L = -T.sum(self.y * T.log(self.z_dropout) + (1 - self.y)
                    * T.log(1 - self.z_dropout), axis=1)
         self.cost = T.mean(L)
+        self.preds = T.max(self.z, axis=1)
         self.acc = T.neq(
             T.argmax(self.z, axis=1), T.argmax(self.y, axis=1)).mean()
 
