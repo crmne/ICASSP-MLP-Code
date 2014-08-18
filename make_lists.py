@@ -37,7 +37,7 @@ def generate_mirex_list(train_list, annotations):
     return out_list
 
 
-def make_file_list(gtzan_path, rand, n_folds=5, songs_per_genre=None):
+def make_file_list(gtzan_path, rand, n_folds, songs_per_genre, train_valid_ratio=0.8):
     """
     Generates lists
     """
@@ -86,7 +86,7 @@ def make_file_list(gtzan_path, rand, n_folds=5, songs_per_genre=None):
         create_fold(n, n_folds, folds, annotations, out_path)
 
 
-def create_fold(n, n_folds, folds, annotations, out_path):
+def create_fold(n, n_folds, folds, annotations, out_path, train_valid_ratio):
     train_path = os.path.join(out_path, 'train_%i_of_%i.txt' % (n + 1, n_folds))
     valid_path = os.path.join(out_path, 'valid_%i_of_%i.txt' % (n + 1, n_folds))
     test_path = os.path.join(out_path, 'test_%i_of_%i.txt' % (n + 1, n_folds))
@@ -101,10 +101,10 @@ def create_fold(n, n_folds, folds, annotations, out_path):
         generate_mirex_list(train_list, annotations))
     open(test_path, 'w').writelines(
         generate_mirex_list(test_list, annotations))
-    split_list_file(train_path, train_path, valid_path, ratio=0.8)
+    split_list_file(train_path, train_path, valid_path, train_valid_ratio)
 
 
-def split_list_file(input_file, out_file1, out_file2, ratio=0.8):
+def split_list_file(input_file, out_file1, out_file2, ratio):
     input_list = open(input_file, 'r').readlines()
 
     n = len(input_list)
@@ -162,6 +162,7 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--folds", type=int, default=10, help="number of folds")
     parser.add_argument("-g", "--songs_per_genre", type=int, default=None, help="number of songs per genre to use")
     parser.add_argument("-s", "--seed", type=int, default=None, help="set a specific seed")
+    parser.add_argument("-r", "--tvratio", type=float, default=0.8, help="training/validation ratio")
     args = parser.parse_args()
 
     rand = RandomState(args.seed)
