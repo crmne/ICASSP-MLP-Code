@@ -46,7 +46,7 @@ class PreProcessor():
         return flat_data, flat_targets
 
     def preprocess(self, data, scale=True, new_sigma=None, new_mean=None):
-        print 'Preprocesssing data...'
+        print 'Preprocessing data...'
         if scale:
             self.scaler = preprocessing.StandardScaler().fit(data)
             self.scaler.transform(data)
