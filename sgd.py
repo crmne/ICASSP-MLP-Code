@@ -42,8 +42,6 @@ class SGD_Optimizer():
                 self.params_mom.append(param_init)
         self.costs = costs
         self.num_costs = len(costs)
-        assert(isinstance(costs, list),
-               "The costs given to the SGD class must be a list, even for one element.")
         self.updates_old = updates_old
         self.consider_constant = consider_constant
         self.build_train_fn()
