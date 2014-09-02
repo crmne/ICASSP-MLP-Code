@@ -26,3 +26,14 @@ def get_state():
     state['seed'] = 1234  # number or None, set a global seed to make experiments reproducible
     state['train_valid_ratio'] = 0.66  # ratio between training and validation splits
     return state
+
+
+def print_state():
+    from collections import OrderedDict
+    state = OrderedDict(sorted(get_state().items()))
+    for k, v in state.iteritems():
+        print "%s = %s" % (k, v)
+
+
+if __name__ == '__main__':
+    print_state()
