@@ -106,7 +106,7 @@ class MLP():
                    * T.log(1 - self.z), axis=1)
         #L = T.sum((self.z-self.y)**2,axis=1)
         self.cost = T.mean(L)
-        self.preds = T.max(self.z, axis=1)
+        self.preds = T.argmax(self.z, axis=1)
         self.acc = T.neq(
             T.argmax(self.z, axis=1), T.argmax(self.y, axis=1)).mean()
         # return [self.x,self.y],self.cost,self.params
@@ -117,8 +117,8 @@ class MLP():
         L = -T.sum(self.y * T.log(self.z_dropout) + (1 - self.y)
                    * T.log(1 - self.z_dropout), axis=1)
         self.cost = T.mean(L)
-        self.preds = T.max(self.z, axis=1)
-        self.acc = T.neq(
+        self.preds = T.argmax(self.z, axis=1)
+        self.acc = T.neq(  # TODO: this is an error
             T.argmax(self.z, axis=1), T.argmax(self.y, axis=1)).mean()
 
 if __name__ == '__main__':
