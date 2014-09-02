@@ -4,6 +4,7 @@ import os
 import pickle
 import utils as U
 import argparse
+import state
 
 
 def read_file(filename):
@@ -159,18 +160,16 @@ def generate_ground_truth_pickle(gt_file):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Creates the lists for training/validation/test data.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
-    parser.add_argument("-f", "--folds", type=int, default=10, help="number of folds")
-    parser.add_argument("-g", "--songs_per_genre", type=int, default=None, help="number of songs per genre to use")
-    parser.add_argument("-s", "--seed", type=int, default=None, help="set a specific seed")
-    parser.add_argument("-r", "--tvratio", type=float, default=0.8, help="training/validation ratio")
     args = parser.parse_args()
 
-    rand = RandomState(args.seed)
+    state = state.get_state()
+
+    rand = RandomState(state['seed'])
 
     print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1
 
     make_file_list(
         os.path.abspath(args.dataset_dir),
         rand,
-        args.folds,
-        args.songs_per_genre)
+        state['folds'],
+        state['songs_per_genre'])

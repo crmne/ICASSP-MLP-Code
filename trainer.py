@@ -77,14 +77,13 @@ class trainer():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trains the neural network.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
-    parser.add_argument("-s", "--seed", type=int, default=None, help="set a specific seed")
     args = parser.parse_args()
-
-    rand = RandomState(args.seed)
-
-    print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1
 
     state = state.get_state()
     state['dataset_dir'] = os.path.abspath(args.dataset_dir)
+
+    rand = RandomState(state['seed'])
+    print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1
+
     test = trainer(state, rand)
     test.train()
