@@ -81,10 +81,10 @@ def make_file_list(gtzan_path, rand, n_folds, songs_per_genre, train_valid_ratio
     folds = get_folds(files_list, n_folds=n_folds)
 
     # Single fold for quick experiments
-    create_fold(0, 1, folds, annotations, out_path)
+    create_fold(0, 1, folds, annotations, out_path, train_valid_ratio)
 
     for n in range(n_folds):
-        create_fold(n, n_folds, folds, annotations, out_path)
+        create_fold(n, n_folds, folds, annotations, out_path, train_valid_ratio)
 
 
 def create_fold(n, n_folds, folds, annotations, out_path, train_valid_ratio):
