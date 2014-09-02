@@ -67,12 +67,14 @@ class trainer():
         num_epochs = self.state.get('num_epochs', 200)
         save = self.state.get('save', False)
         mom_rate = self.state.get('mom_rate', None)
+        plot = self.state.get('plot', False)
         self.optimizer.train(train_set,
                              valid_set,
                              learning_rate=lr,
                              num_epochs=num_epochs,
                              save=save,
-                             mom_rate=mom_rate)
+                             mom_rate=mom_rate,
+                             plot=plot)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trains the neural network.")
