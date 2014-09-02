@@ -5,13 +5,13 @@ Feb,2014
 C4DM
 """
 import numpy
-import sys
 import theano
 import theano.tensor as T
 import cPickle
 import os
 from theano.compat.python2x import OrderedDict
 import copy
+import matplotlib.pyplot as plt
 
 
 class SGD_Optimizer():
@@ -84,7 +84,7 @@ class SGD_Optimizer():
         self.f = theano.function(
             self.grad_inputs, self.costs, updates=self.updates_old)
 
-    def train(self, train_set, valid_set=None, learning_rate=0.1, num_epochs=500, save=False, output_folder=None, lr_update=None, mom_rate=0.9):
+    def train(self, train_set, valid_set=None, learning_rate=0.1, num_epochs=500, save=False, output_folder=None, lr_update=None, mom_rate=0.9, plot=True):
         self.best_cost = numpy.inf
         self.init_lr = learning_rate
         self.lr = numpy.array(learning_rate)
@@ -94,45 +94,95 @@ class SGD_Optimizer():
         self.valid_set = valid_set
         self.save = save
         self.lr_update = lr_update
+        # each element is an epoch, each element of an epoch is 1st train and
+        # 2nd validation. of each train and validation there are 2 elements
+        costs = []
+        if plot:
+            self.fig = plt.figure()
+            plt.ion()
+            plt.show()
         try:
             for u in xrange(num_epochs):
-                cost = []
-                for i in self.train_set.iterate(True):
-                    inputs = i + [self.lr]
-                    if self.momentum:
-                        inputs = inputs + [self.mom_rate]
-                    cost.append(self.f(*inputs))
-                mean_costs = numpy.mean(cost, axis=0)
-                print '  Epoch %i   ' % (u + 1)
-                print '***Train Results***'
-                for i in xrange(self.num_costs):
-                    print "Cost %i: %f" % (i, mean_costs[i])
+                epoch = []
 
-                if not valid_set:
-                    this_cost = numpy.absolute(numpy.mean(cost, axis=0))
-                    if this_cost < self.best_cost:
-                        self.best_cost = this_cost
-                        print 'Best Params!'
-                        if save:
-                            self.save_model()
-                    sys.stdout.flush()
-                else:
-                    self.perform_validation()
+                epoch.append(self.perform_training())
+
+                epoch.append(self.perform_validation())
+
+                best_params = self.are_best_params(numpy.absolute(epoch[-1]))
 
                 if lr_update:
                     self.update_lr(u + 1, begin_anneal=1)
 
+                self.print_epoch(epoch, u, best_params)
+                if plot:
+                    self.update_plot(epoch, u, best_params)
+                costs.append(epoch)
+
         except KeyboardInterrupt:
             print 'Training interrupted.'
 
-    def perform_validation(self,):
+        if self.save:
+            self.save_costs(costs)
+
+    def update_plot(self, epoch, epoch_n, best_cost=False):
+        x = epoch_n + 1
+
+        plt.subplot(2, 2, 1)
+        plt.plot(x, epoch[0][0], 'r' + 'o' if best_cost else '.' + '-')
+        plt.title('Training')
+        plt.ylabel('Cost 0')
+
+        plt.subplot(2, 2, 3)
+        plt.plot(x, epoch[0][1], 'r' + 'o' if best_cost else '.' + '-')
+        plt.ylabel('Cost 1')
+        plt.xlabel('Epoch')
+
+        plt.subplot(2, 2, 2)
+        plt.title('Validation')
+        plt.plot(x, epoch[1][0], 'r' + 'o' if best_cost else '.' + '-')
+
+        plt.subplot(2, 2, 4)
+        plt.plot(x, epoch[1][1], 'r' + 'o' if best_cost else '.' + '-')
+        plt.xlabel('Epoch')
+
+        plt.draw()
+
+    def are_best_params(self, cost):
+        # import pdb
+        # pdb.set_trace()
+        ret = (cost < self.best_cost).all()
+        if ret:
+            self.best_cost = cost
+            if self.save:
+                self.save_model()
+        return ret
+
+    def print_epoch(self, epoch, epoch_n, best_cost=False):
+        print "== Epoch %i ==" % (epoch_n + 1)
+        print "Training Results:"
+        for i in xrange(len(epoch[0])):
+            print "Cost %i: %f" % (i, epoch[0][i])
+        print "Validation Results:"
+        for i in xrange(len(epoch[1])):
+            print "Cost %i: %f" % (i, epoch[1][i])
+        if best_cost:
+            print "Best Params!"
+
+    def perform_training(self):
+        cost = []
+        for i in self.train_set.iterate(True):
+            inputs = i + [self.lr]
+            if self.momentum:
+                inputs = inputs + [self.mom_rate]
+            cost.append(self.f(*inputs))
+        return numpy.mean(cost, axis=0)
+
+    def perform_validation(self):
         cost = []
         for i in self.valid_set.iterate(True):
             cost.append(self.calc_cost(*i))
-        mean_costs = numpy.mean(cost, axis=0)
-        print '***Validation Results***'
-        for i in xrange(self.num_costs):
-            print "Cost %i: %f" % (i, mean_costs[i])
+        return numpy.mean(cost, axis=0)
 
         # Using accuracy as metric
         this_cost = numpy.absolute(numpy.mean(cost, axis=0))[1]
@@ -151,6 +201,15 @@ class SGD_Optimizer():
                 os.makedirs(self.output_folder)
             save_path = os.path.join(self.output_folder, 'best_params.pickle')
             cPickle.dump(best_params, open(save_path, 'w'))
+
+    def save_costs(self, costs):
+        if not self.output_folder:
+            cPickle.dump(costs, open('costs.pickle', 'w'))
+        else:
+            if not os.path.exists(self.output_folder):
+                os.makedirs(self.output_folder)
+            save_path = os.path.join(self.output_folder, 'costs.pickle')
+            cPickle.dump(costs, open(save_path, 'w'))
 
     def update_lr(self, count, update_type='annealed', begin_anneal=500., min_lr=0.01, decay_factor=1.2):
         if update_type == 'annealed':
