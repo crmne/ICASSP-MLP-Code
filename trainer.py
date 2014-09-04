@@ -68,13 +68,17 @@ class trainer():
         save = self.state.get('save', False)
         mom_rate = self.state.get('mom_rate', None)
         plot = self.state.get('plot', False)
+        output_folder = self.state.get('output_folder', None)
         self.optimizer.train(train_set,
                              valid_set,
                              learning_rate=lr,
                              num_epochs=num_epochs,
                              save=save,
                              mom_rate=mom_rate,
-                             plot=plot)
+                             plot=plot,
+                             output_folder=output_folder)
+        import pdb
+        pdb.set_trace()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trains the neural network.")
@@ -83,6 +87,9 @@ if __name__ == '__main__':
 
     state = state.get_state()
     state['dataset_dir'] = os.path.abspath(args.dataset_dir)
+
+    if state['output_folder']:
+        state['output_folder'] = os.path.join('experiments', state['output_folder'])
 
     rand = RandomState(state['seed'])
     print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1

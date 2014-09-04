@@ -122,6 +122,8 @@ class SGD_Optimizer():
 
         if self.save:
             self.save_costs(costs)
+            if plot:
+                self.save_costs_plot()
 
     def update_plot(self, epoch, epoch_n, best_cost=False):
         x = epoch_n + 1
@@ -208,6 +210,15 @@ class SGD_Optimizer():
                 os.makedirs(self.output_folder)
             save_path = os.path.join(self.output_folder, 'costs.pickle')
             cPickle.dump(costs, open(save_path, 'w'))
+
+    def save_costs_plot(self):
+        if not self.output_folder:
+            self.fig.savefig('costs.png')
+        else:
+            if not os.path.exists(self.output_folder):
+                os.makedirs(self.output_folder)
+            save_path = os.path.join(self.output_folder, 'costs.png')
+            self.fig.savefig(save_path)
 
     def update_lr(self, count, update_type='annealed', begin_anneal=500., min_lr=0.01, decay_factor=1.2):
         if update_type == 'annealed':
