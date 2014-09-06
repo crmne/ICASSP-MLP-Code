@@ -12,6 +12,7 @@ import os
 from theano.compat.python2x import OrderedDict
 import copy
 import matplotlib.pyplot as plt
+import state
 
 
 class SGD_Optimizer():
@@ -213,12 +214,12 @@ class SGD_Optimizer():
 
     def save_costs_plot(self):
         if not self.output_folder:
-            self.fig.savefig('costs.png')
+            self.fig.savefig('costs.pdf')
         else:
             if not os.path.exists(self.output_folder):
                 os.makedirs(self.output_folder)
-            save_path = os.path.join(self.output_folder, 'costs.png')
-            self.fig.savefig(save_path)
+            save_path = os.path.join(self.output_folder, 'costs.pdf')
+            self.fig.savefig(save_path, format='PDF')
 
     def update_lr(self, count, update_type='annealed', begin_anneal=500., min_lr=0.01, decay_factor=1.2):
         if update_type == 'annealed':
