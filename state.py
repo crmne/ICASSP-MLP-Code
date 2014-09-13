@@ -3,6 +3,9 @@ Parameters
 """
 import os
 import shutil
+import argparse
+
+# TODO: distribution of the weights
 
 
 def get_state():
@@ -11,20 +14,20 @@ def get_state():
     state['n_inputs'] = 513  # number of input neurons
     state['n_outputs'] = 10  # number of output neurons
     state['n_hidden'] = [50]  # list of numbers of neurons in hidden layers, e.g.: [50, 50, 50]
-    state['activation'] = 'ReLU'  # 'sigmoid' or 'ReLU'
-    state['output_layer'] = 'softmax'  # 'sigmoid' or 'softmax'
+    state['activation'] = 'sigmoid'  # 'sigmoid' or 'ReLU'
+    state['output_layer'] = 'sigmoid'  # 'sigmoid' or 'softmax'
     state['dropout_rates'] = None  # list of dropout rates for each layer, None if no dropout is used
-    state['momentum'] = False  # bool
-    state['learning_rate'] = 0.01
-    state['num_epochs'] = 200  # number of epochs for SGD
+    state['momentum'] = True  # bool
+    state['learning_rate'] = 0.7
+    state['num_epochs'] = 500  # number of epochs for SGD
     state['save'] = True  # bool, saves the best model and the costs and a bunch of other stuff if True
-    state['output_folder'] = "4"  # String or None, where to save those infos
+    state['output_folder'] = "Sep13A"  # String or None, where to save those infos
     state['lr_update'] = False  # bool, updates learning rate if True
     state['batch_size'] = None  # minibatch size used for SGD
-    state['mom_rate'] = 0.2  # momentum rate
+    state['mom_rate'] = 0.3  # momentum rate
     state['plot'] = True  # bool, plots the costs in real time if True
     state['folds'] = 10  # number of folds to use
-    state['songs_per_genre'] = 1  # number of songs per genre to be selected, or None to select all
+    state['songs_per_genre'] = 10  # number of songs per genre to be selected, or None to select all
     state['seed'] = 1  # number or None, set a global seed to make experiments reproducible
     state['train_valid_ratio'] = 0.8  # ratio between training and validation splits
 
@@ -33,10 +36,21 @@ def get_state():
     return state
 
 
-def get_state_string():
+def get_ordered_state():
     from collections import OrderedDict
-    state = OrderedDict(sorted(get_state().items()))
-    return "\n".join(["%s = %s" % (k, v) for k, v in state.iteritems()])
+    return OrderedDict(sorted(get_state().items()))
+
+
+def get_state_string():
+    return "\n".join(["%s = %s" % (k, v) for k, v in get_ordered_state().iteritems()])
+
+
+def escape_latex_string(latex_string):
+    return str(latex_string).replace('_', '\\_')
+
+
+def get_latex_string():
+    return "\\\\\n".join(["%s & %s" % (escape_latex_string(k), escape_latex_string(v)) for k, v in get_ordered_state().iteritems()])
 
 
 def save_state():
@@ -49,5 +63,13 @@ def save_state():
 
 
 if __name__ == '__main__':
-    print get_state_string()
+    parser = argparse.ArgumentParser(description="Displays the state.")
+    parser.add_argument("format", nargs='?', choices=['text', 'latex'], default='text')
+    args = parser.parse_args()
+
+    if args.format == 'text':
+        print get_state_string()
+    elif args.format == 'latex':
+        print get_latex_string()
+
     save_state()
