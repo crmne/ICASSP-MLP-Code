@@ -79,15 +79,18 @@ class trainer():
                              output_folder,
                              self.state.get('lr_update'),
                              mom_rate,
-                             plot)
+                             plot,
+                             self.state.get('headless'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trains the neural network.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
+    parser.add_argument("-n", "--headless", type=bool, default=False, help="don't show live plot")
     args = parser.parse_args()
 
     state = state.get_state()
     state['dataset_dir'] = os.path.abspath(args.dataset_dir)
+    state['headless'] = args.headless
 
     rand = RandomState(state['seed'])
     print "Seed: %i" % rand.get_state()[1][0]  # ugly but works in numpy 1.8.1

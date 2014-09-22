@@ -83,7 +83,7 @@ class SGD_Optimizer():
         self.f = theano.function(
             self.grad_inputs, self.costs, updates=self.updates_old)
 
-    def train(self, train_set, valid_set, update_lr_params, learning_rate, num_epochs, save, output_folder, lr_update, mom_rate, plot):
+    def train(self, train_set, valid_set, update_lr_params, learning_rate, num_epochs, save, output_folder, lr_update, mom_rate, plot, headless):
         self.best_cost = numpy.inf
         self.init_lr = learning_rate
         self.lr = numpy.array(learning_rate)
@@ -102,8 +102,9 @@ class SGD_Optimizer():
         costs = []
         if plot:
             self.fig = plt.figure()
-            plt.ion()
-            plt.show()
+            if not headless:
+                plt.ion()
+                plt.show()
         try:
             for u in xrange(num_epochs):
                 epoch = []
