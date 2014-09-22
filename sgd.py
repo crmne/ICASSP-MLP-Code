@@ -93,6 +93,7 @@ class SGD_Optimizer():
         self.valid_set = valid_set
         self.save = save
         self.lr_update = lr_update
+        self.headless = headless
         update_type = update_lr_params['update_type']
         begin_anneal = update_lr_params['begin_anneal']
         min_lr = update_lr_params['min_lr']
@@ -101,8 +102,8 @@ class SGD_Optimizer():
         # 2nd validation. of each train and validation there are 2 elements
         costs = []
         if plot:
-            self.fig = plt.figure()
             if not headless:
+                self.fig = plt.figure()
                 plt.ion()
                 plt.show()
         try:
@@ -155,7 +156,8 @@ class SGD_Optimizer():
         plt.plot(x, epoch[1][1], 'r' + 'o' if best_cost else '.' + '-')
         plt.xlabel('Epoch')
 
-        plt.draw()
+        if not self.headless:
+            plt.draw()
 
     def are_best_params(self, cost):
         # import pdb
@@ -222,12 +224,12 @@ class SGD_Optimizer():
 
     def save_costs_plot(self):
         if not self.output_folder:
-            self.fig.savefig('costs.pdf')
+            plt.savefig('costs.pdf')
         else:
             if not os.path.exists(self.output_folder):
                 os.makedirs(self.output_folder)
             save_path = os.path.join(self.output_folder, 'costs.pdf')
-            self.fig.savefig(save_path, format='PDF')
+            plt.savefig(save_path, format='PDF')
 
     def update_lr(self, count, update_type, begin_anneal, min_lr, decay_factor):
         if update_type == 'annealed':
