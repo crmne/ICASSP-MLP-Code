@@ -11,8 +11,10 @@ import cPickle
 import os
 from theano.compat.python2x import OrderedDict
 import copy
-import matplotlib.pyplot as plt
-import state
+
+
+def my_imports(module_name):
+    globals()[module_name] = __import__(module_name)
 
 
 class SGD_Optimizer():
@@ -102,10 +104,14 @@ class SGD_Optimizer():
         # 2nd validation. of each train and validation there are 2 elements
         costs = []
         if plot:
+            my_imports("matplotlib")
+            if headless:
+                matplotlib.use("Agg")
+            my_imports("matplotlib.pyplot")
             if not headless:
-                self.fig = plt.figure()
-                plt.ion()
-                plt.show()
+                self.fig = matplotlib.pyplot.figure()
+                matplotlib.pyplot.ion()
+                matplotlib.pyplot.show()
         try:
             for u in xrange(num_epochs):
                 epoch = []
@@ -138,26 +144,26 @@ class SGD_Optimizer():
     def update_plot(self, epoch, epoch_n, best_cost=False):
         x = epoch_n + 1
 
-        plt.subplot(2, 2, 1)
-        plt.plot(x, epoch[0][0], 'r' + 'o' if best_cost else '.' + '-')
-        plt.title('Training')
-        plt.ylabel('Cost 0')
+        matplotlib.pyplot.subplot(2, 2, 1)
+        matplotlib.pyplot.plot(x, epoch[0][0], 'r' + 'o' if best_cost else '.' + '-')
+        matplotlib.pyplot.title('Training')
+        matplotlib.pyplot.ylabel('Cost 0')
 
-        plt.subplot(2, 2, 3)
-        plt.plot(x, epoch[0][1], 'r' + 'o' if best_cost else '.' + '-')
-        plt.ylabel('Cost 1')
-        plt.xlabel('Epoch')
+        matplotlib.pyplot.subplot(2, 2, 3)
+        matplotlib.pyplot.plot(x, epoch[0][1], 'r' + 'o' if best_cost else '.' + '-')
+        matplotlib.pyplot.ylabel('Cost 1')
+        matplotlib.pyplot.xlabel('Epoch')
 
-        plt.subplot(2, 2, 2)
-        plt.title('Validation')
-        plt.plot(x, epoch[1][0], 'r' + 'o' if best_cost else '.' + '-')
+        matplotlib.pyplot.subplot(2, 2, 2)
+        matplotlib.pyplot.title('Validation')
+        matplotlib.pyplot.plot(x, epoch[1][0], 'r' + 'o' if best_cost else '.' + '-')
 
-        plt.subplot(2, 2, 4)
-        plt.plot(x, epoch[1][1], 'r' + 'o' if best_cost else '.' + '-')
-        plt.xlabel('Epoch')
+        matplotlib.pyplot.subplot(2, 2, 4)
+        matplotlib.pyplot.plot(x, epoch[1][1], 'r' + 'o' if best_cost else '.' + '-')
+        matplotlib.pyplot.xlabel('Epoch')
 
         if not self.headless:
-            plt.draw()
+            matplotlib.pyplot.draw()
 
     def are_best_params(self, cost):
         # import pdb
@@ -224,12 +230,12 @@ class SGD_Optimizer():
 
     def save_costs_plot(self):
         if not self.output_folder:
-            plt.savefig('costs.pdf')
+            matplotlib.pyplot.savefig('costs.pdf')
         else:
             if not os.path.exists(self.output_folder):
                 os.makedirs(self.output_folder)
             save_path = os.path.join(self.output_folder, 'costs.pdf')
-            plt.savefig(save_path, format='PDF')
+            matplotlib.pyplot.savefig(save_path, format='PDF')
 
     def update_lr(self, count, update_type, begin_anneal, min_lr, decay_factor):
         if update_type == 'annealed':

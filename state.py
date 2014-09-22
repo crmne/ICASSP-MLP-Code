@@ -42,7 +42,7 @@ def get_state():
         'update_type': 'exponential',
         'begin_anneal': 500,
         'min_lr': 0.00001,
-        'decay_factor': 1.0001
+        'decay_factor': 1.0005
     }
 
     if state['output_folder']:
