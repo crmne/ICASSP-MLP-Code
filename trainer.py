@@ -36,7 +36,8 @@ class trainer():
             self.model = MLP(rand, n_inputs=self.state.get('n_inputs', 513),
                              n_outputs=self.state.get('n_ouputs', 10),
                              n_hidden=self.state.get('n_hidden', [50]),
-                             activation=self.state.get('activation', 'sigmoid'),
+                             activation=self.state.get(
+                                 'activation', 'sigmoid'),
                              output_layer=self.state.get('sigmoid', 'sigmoid'),
                              dropout_rates=self.state.get('dropout_rates', None))
         elif self.state.get('model') == 'LR':
@@ -71,12 +72,14 @@ class trainer():
         output_folder = self.state.get('output_folder', None)
         self.optimizer.train(train_set,
                              valid_set,
-                             learning_rate=lr,
-                             num_epochs=num_epochs,
-                             save=save,
-                             mom_rate=mom_rate,
-                             plot=plot,
-                             output_folder=output_folder)
+                             self.state.get('update_lr_params'),
+                             lr,
+                             num_epochs,
+                             save,
+                             output_folder,
+                             self.state.get('lr_update'),
+                             mom_rate,
+                             plot)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trains the neural network.")

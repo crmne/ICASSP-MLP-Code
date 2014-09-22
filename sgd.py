@@ -83,7 +83,7 @@ class SGD_Optimizer():
         self.f = theano.function(
             self.grad_inputs, self.costs, updates=self.updates_old)
 
-    def train(self, train_set, valid_set=None, learning_rate=0.1, num_epochs=500, save=False, output_folder=None, lr_update=None, mom_rate=0.9, plot=True):
+    def train(self, train_set, valid_set, update_lr_params, learning_rate, num_epochs, save, output_folder, lr_update, mom_rate, plot):
         self.best_cost = numpy.inf
         self.init_lr = learning_rate
         self.lr = numpy.array(learning_rate)
@@ -93,6 +93,10 @@ class SGD_Optimizer():
         self.valid_set = valid_set
         self.save = save
         self.lr_update = lr_update
+        update_type = update_lr_params['update_type']
+        begin_anneal = update_lr_params['begin_anneal']
+        min_lr = update_lr_params['min_lr']
+        decay_factor = update_lr_params['decay_factor']
         # each element is an epoch, each element of an epoch is 1st train and
         # 2nd validation. of each train and validation there are 2 elements
         costs = []
@@ -111,7 +115,10 @@ class SGD_Optimizer():
                 best_params = self.are_best_params(numpy.absolute(epoch[-1]))
 
                 if lr_update:
-                    self.update_lr(u + 1, begin_anneal=1)
+                    self.update_lr(
+                        u + 1, update_type=update_type, begin_anneal=begin_anneal, min_lr=min_lr, decay_factor=decay_factor)
+
+                print "Learning rate = %f" % self.lr
 
                 self.print_epoch(epoch, u, best_params)
                 if plot:
@@ -221,7 +228,7 @@ class SGD_Optimizer():
             save_path = os.path.join(self.output_folder, 'costs.pdf')
             self.fig.savefig(save_path, format='PDF')
 
-    def update_lr(self, count, update_type='annealed', begin_anneal=500., min_lr=0.01, decay_factor=1.2):
+    def update_lr(self, count, update_type, begin_anneal, min_lr, decay_factor):
         if update_type == 'annealed':
             scale_factor = float(begin_anneal) / count
             self.lr = self.init_lr * min(1., scale_factor)

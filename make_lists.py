@@ -60,7 +60,8 @@ def make_file_list(gtzan_path, rand, n_folds, songs_per_genre, train_valid_ratio
             genres_dic[v].append(k)
         files_list = []
         for k in genres_dic.iterkeys():
-            sample = rand.choice(genres_dic[k], size=songs_per_genre, replace=False)
+            sample = rand.choice(
+                genres_dic[k], size=songs_per_genre, replace=False)
             print "Selected %i songs for %s" % (len(sample), k)
             files_list.extend(sample)
 
@@ -84,12 +85,15 @@ def make_file_list(gtzan_path, rand, n_folds, songs_per_genre, train_valid_ratio
     create_fold(0, 1, folds, annotations, out_path, train_valid_ratio)
 
     for n in range(n_folds):
-        create_fold(n, n_folds, folds, annotations, out_path, train_valid_ratio)
+        create_fold(
+            n, n_folds, folds, annotations, out_path, train_valid_ratio)
 
 
 def create_fold(n, n_folds, folds, annotations, out_path, train_valid_ratio):
-    train_path = os.path.join(out_path, 'train_%i_of_%i.txt' % (n + 1, n_folds))
-    valid_path = os.path.join(out_path, 'valid_%i_of_%i.txt' % (n + 1, n_folds))
+    train_path = os.path.join(
+        out_path, 'train_%i_of_%i.txt' % (n + 1, n_folds))
+    valid_path = os.path.join(
+        out_path, 'valid_%i_of_%i.txt' % (n + 1, n_folds))
     test_path = os.path.join(out_path, 'test_%i_of_%i.txt' % (n + 1, n_folds))
 
     test_list = folds[n]
@@ -158,7 +162,8 @@ def generate_ground_truth_pickle(gt_file):
     pickle.dump(mp3_dict, open(gt_pickle, 'w'))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Creates the lists for training/validation/test data.")
+    parser = argparse.ArgumentParser(
+        description="Creates the lists for training/validation/test data.")
     parser.add_argument("dataset_dir", help="/path/to/dataset_dir")
     args = parser.parse_args()
 
